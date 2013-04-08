@@ -1,0 +1,10 @@
+<hoge>
+  <fuga>
+	asdf
+  </fuga>
+  <foo baz="baz">
+	bar
+  </foo>
+</hoge>
+
+
