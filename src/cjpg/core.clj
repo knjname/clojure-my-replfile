@@ -474,6 +474,11 @@ java.io.File/separator ; "\\"
                            (lazy-seq (cons (do (print "2nd eval") 2) nil))))]
   (doall lazy-by-hand))
 
-
+;;; arrow macro
+(-> "asdf"
+    .toUpperCase ; ASDF
+    (.charAt 0) ; \A
+    Character. ; \A
+    .getClass) ; java.lang.Character
 
 
