@@ -1,13 +1,7 @@
-# cjpg
 
-A Clojure library designed to ... well, that part is up to you.
+# Clojure を始めよう！
 
-## Usage
+ClojureのREPLで動かすための初心者用プロジェクトです。
 
-FIXME
 
-## License
 
-Copyright © 2013 FIXME
-
-Distributed under the Eclipse Public License, the same as Clojure.
