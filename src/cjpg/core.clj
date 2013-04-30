@@ -1028,5 +1028,11 @@ cjpg.core/privatething ; var is not public と怒られます
 ;;; 戻ります
 (ns cjpg.core)
 
+;; Futureを使う計算
+(import [java.util.concurrent Executors] )
+(let [ext (Executors/newCachedThreadPool)
+      ^Callable delayed #(+ 3 4)]
+  (.get (.submit ext delayed)))
+
 
 
