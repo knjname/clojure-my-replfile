@@ -1055,7 +1055,7 @@ cjpg.core/privatething ; var is not public と怒られます
          (^String sayHello [this ^String name] (str "Ciao, " name " " (.familyname this)))) ; this をちゃんと使ってみよう
 
 (-> (Italiano. "bros")
-    (.sayHello "Mario"))
+    (.sayHello "Mario")) ; Ciao, Mario bros
 
 ;; プロトコル
 
