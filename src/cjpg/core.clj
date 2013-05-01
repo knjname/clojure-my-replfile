@@ -1034,5 +1034,22 @@ cjpg.core/privatething ; var is not public と怒られます
       ^Callable delayed #(+ 3 4)]
   (.get (.submit ext delayed)))
 
+;; interface定義
+(definterface HumbleFolk
+  (^String sayHello [^String name]))
+
+;; 実装してみよう
+(deftype Japanese [familyname] HumbleFolk
+         (^String sayHello [_ ^String name] (str "Konnichiwa, " familyname " " name))) ; _ はthisが入る。Pythonっぽい
+
+(deftype American [nickname] HumbleFolk
+         (^String sayHello [_ ^String name] (str "Hello, " name " the " nickname)))
+
+(-> (Japanese. "Suzuki")
+    (.sayHello "Ichiro")) ; "Konnichiwa, Suzuki Ichiro"
+
+(-> (American. "Poo")
+    (.sayHello "Winnie")) ; "Hello, Winnie the Poo"
+
 
 
