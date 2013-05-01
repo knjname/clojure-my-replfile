@@ -1145,12 +1145,11 @@ cjpg.core/privatething ; var is not public と怒られます
 
 ;; じゃ、道具から
 (defn rewrite-index-symbol [sym rewriteWith]
-  (->
-   sym
-   str
-   (.replaceAll "%%%" (str rewriteWith))
-   symbol
-   ))
+  (-> sym
+      str
+      (.replaceAll "%%%" (str rewriteWith))
+      symbol
+      ))
 
 (defn replace-form-index [idx form]
   (clojure.walk/postwalk
