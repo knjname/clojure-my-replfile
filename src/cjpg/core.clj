@@ -974,7 +974,7 @@ java.io.File/separator ; "\\"
     .getClass) ; java.lang.Character
 
 ;; namespace
-;; (名前空間)
+;; (名前空間 イライラする！)
 (clojure.core/all-ns) ; すべてのnamespaceを見ることができる
 
 (in-ns 'dokodemo.door) ; #<Namespace dokodemo.door> シンボル
@@ -1051,5 +1051,31 @@ cjpg.core/privatething ; var is not public と怒られます
 (-> (American. "Poo")
     (.sayHello "Winnie")) ; "Hello, Winnie the Poo"
 
+(deftype Italiano [familyname] HumbleFolk
+         (^String sayHello [this ^String name] (str "Ciao, " name " " (.familyname this)))) ; this をちゃんと使ってみよう
 
+(-> (Italiano. "bros")
+    (.sayHello "Mario"))
 
+;; プロトコル
+
+(defprotocol Sound
+  (sounds [this]))
+
+(deftype 日光 [] Sound
+         (sounds [_] "ぽかぽか"))
+
+(defn- strRepeat [n repeated]
+  (apply str (repeat n repeated)))
+
+(deftype 蚊 [numberOfMosquitoes] Sound
+         (sounds [_] (strRepeat numberOfMosquitoes "ブーン")))
+
+(-> (日光.)
+    sounds) ; ぽかぽか
+(-> (蚊. 3)
+    sounds) ; ブーンブーンブーン
+
+(extends? Sound 蚊) ; true
+(extends? Sound 日光) ; true
+(extends? Sound String) ; false
