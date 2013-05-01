@@ -1098,13 +1098,15 @@ cjpg.core/privatething ; var is not public と怒られます
     (recur (- n 1) `(~@encloser ~body) encloser)))
 
 
-;; (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 1))))))))))
-(macroexpand '(enclose-n 10 1 * 2))
+;; 10回くるんでる
+;; (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 5))))))))))
+(macroexpand '(enclose-n 10 5 * 2))
 
-;; n回マクロ展開するマクロを書いてみる
+;; 同じようにn回マクロ展開するマクロを書いてみる
 (defmacro macroexpand-n [n form]
   (enclose n form '(macroexpand-1)))
 
+;; 3回マクロ展開している
 ;; (clojure.core/-> (clojure.core/-> (clojure.core/-> (clojure.core/-> a b) c) d) e f g h i)
 (macroexpand-n 3 '(-> a b c d e f g h i))
 
@@ -1134,6 +1136,45 @@ cjpg.core/privatething ; var is not public と怒られます
   (macroexpand-n 3 form))
 
 ;; ... これを10までやろうと思うんだけど、めんどい
+;; じゃあマクロをいっぱい定義するマクロを作りましょう
 
+;; これを実行したら%%%が2～10までの数字に置換されればいいな
+(form-n-times 2 10
+              (defmacro macroexpand-%%% [form]
+                (macroexpand-n %%% form)))
 
+;; じゃ、道具から
+(defn rewrite-index-symbol [sym rewriteWith]
+  (->
+   sym
+   str
+   (.replaceAll "%%%" (str rewriteWith))
+   symbol
+   ))
+
+(defn replace-form-index [idx form]
+  (clojure.walk/postwalk
+   #(if (symbol? %)
+      (rewrite-index-symbol % idx)
+      %)
+   form))
+
+(defmacro form-n-times [start end form]
+  `(do ~@(for [i (range start (inc end))]
+           (replace-form-index i form))))
+
+;; 実行
+;; これはうまくいかない。
+;; まず、内部の(macroexpand-n %%% form)が実行されるが、%%%が数字じゃないからダメだ。
+(form-n-times
+ 2 10
+ (defmacro macroexpand-%%% [form]
+   (macroexpand-n %%% form)))
+
+;; こっちはうまくいくんだけどね
+(macroexpand
+ '(form-n-times
+   2 10
+   (defmacro macroexpand-%%% [form]
+     (macroexpand-n %%% form))))
 
