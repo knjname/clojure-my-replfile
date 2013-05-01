@@ -973,6 +973,8 @@ java.io.File/separator ; "\\"
     Character. ; \A
     .getClass) ; java.lang.Character
 
+(-> a b c d e) ; (e (d (c (b a)))) と同じ
+
 ;; namespace
 ;; (名前空間 イライラする！)
 (clojure.core/all-ns) ; すべてのnamespaceを見ることができる
@@ -1079,3 +1081,59 @@ cjpg.core/privatething ; var is not public と怒られます
 (extends? Sound 蚊) ; true
 (extends? Sound 日光) ; true
 (extends? Sound String) ; false
+
+;; defmacro
+
+(declare enclose) ; ちょいと後で紹介
+
+;; 指定回数分式をくるむマクロ
+(defmacro enclose-n [n core & encloser]
+  (enclose n core encloser))
+
+;; マクロの下請け関数。マクロだけで処理すると面倒なので関数に渡す。
+;; こういうのは(letfn ) でマクロ内に置いてもいいですけど、defn-でやったほうが楽っちゃ楽。
+(defn- enclose [n body encloser]
+  (if (= n 0)
+    body
+    (recur (- n 1) `(~@encloser ~body) encloser)))
+
+
+;; (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 1))))))))))
+(macroexpand '(enclose-n 10 1 * 2))
+
+;; n回マクロ展開するマクロを書いてみる
+(defmacro macroexpand-n [n form]
+  (enclose n form '(macroexpand-1)))
+
+;; (clojure.core/-> (clojure.core/-> (clojure.core/-> (clojure.core/-> a b) c) d) e f g h i)
+(macroexpand-n 3 '(-> a b c d e f g h i))
+
+;; 下記は同じ結果になる
+(macroexpand-1 '(-> a b c d e f g h i))
+(macroexpand-n 1 '(-> a b c d e f g h i))
+
+;; macroexpand-n の引数nはコンパイル時に自然数(java.lang.Number)でなければならない。
+;; よってこういう呼び出しはできない
+(macroexpand-n (+ 1 2) '(-> a b)) ; clojure.lang.PersistentList cannot be cast to java.lang.Number
+
+;; 上記のようなことをやりたいのであれば、それは関数を使うべき場面だったということ。
+;; そういうことで、なんでもかんでも関数をマクロにできるわけではないし、その逆も然り。
+;; しかし、マクロを使っていれば一度コンパイルした後なら展開後のコードがそのまま実行される。
+;; 場合によってはパフォーマンスで有利になる。
+
+;; マクロを使って新しいマクロを作ってみよう
+(defmacro macroexpand-2 [form]
+  (macroexpand-n 2 form))
+
+;; こう定義したのと全く等価であるが、はるかに見やすい。
+(defmacro ugly-macroexpand-2 [form]
+  (macroexpand-1 (macroexpand-1 form)))
+
+;; もっと定義してみよう
+(defmacro macroexpand-3 [form]
+  (macroexpand-n 3 form))
+
+;; ... これを10までやろうと思うんだけど、めんどい
+
+
+
