@@ -1180,7 +1180,7 @@ cjpg.core/privatething ; var is not public と怒られます
   (defmacro multiply-3 [a] (multiply 3 a))
   (defmacro multiply-4 [a] (multiply 4 a))
   :
-  (defmacro multiply-5 [a] (multiply 100 a)))
+  (defmacro multiply-100 [a] (multiply 100 a)))
 
 (multiply-100 100) ; 10000
 
