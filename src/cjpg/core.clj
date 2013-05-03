@@ -1097,59 +1097,61 @@ cjpg.core/privatething ; var is not public と怒られます
     body
     (recur (- n 1) `(~@encloser ~body) encloser)))
 
-
 ;; 10回くるんでる
 ;; (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 5))))))))))
 (macroexpand '(enclose-n 10 5 * 2))
 
-;; 同じようにn回マクロ展開するマクロを書いてみる
-(defmacro macroexpand-n [n form]
-  (enclose n form '(macroexpand-1)))
-
-;; 3回マクロ展開している
-;; (clojure.core/-> (clojure.core/-> (clojure.core/-> (clojure.core/-> a b) c) d) e f g h i)
-(macroexpand-n 3 '(-> a b c d e f g h i))
-
-;; 下記は同じ結果になる
-(macroexpand-1 '(-> a b c d e f g h i))
-(macroexpand-n 1 '(-> a b c d e f g h i))
-
-;; macroexpand-n の引数nはコンパイル時に自然数(java.lang.Number)でなければならない。
+;; enclosde-n の引数nはコンパイル時に自然数(java.lang.Number)でなければならない。
 ;; よってこういう呼び出しはできない
-(macroexpand-n (+ 1 2) '(-> a b)) ; clojure.lang.PersistentList cannot be cast to java.lang.Number
+(defn multiply [a b]
+  (enclose-n b 0 + a))
+
+;; なので、これはOK
+(defn multiply-ten [a]
+  (enclose-n 10 0 + a))
+;; (def multiply-ten (fn* ([a] (a (a (a (a (a (a (a (a (a (a +)))))))))))))
 
 ;; 上記のようなことをやりたいのであれば、それは関数を使うべき場面だったということ。
 ;; そういうことで、なんでもかんでも関数をマクロにできるわけではないし、その逆も然り。
 ;; しかし、マクロを使っていれば一度コンパイルした後なら展開後のコードがそのまま実行される。
 ;; 場合によってはパフォーマンスで有利になる。
 
-;; マクロを使って新しいマクロを作ってみよう
-(defmacro macroexpand-2 [form]
-  (macroexpand-n 2 form))
+;; マクロならmultiplyは作れる。
+(defmacro multiply [n a]
+  `(enclose-n ~n 0 + ~a))
 
-;; こう定義したのと全く等価であるが、はるかに見やすい。
-(defmacro ugly-macroexpand-2 [form]
-  (macroexpand-1 (macroexpand-1 form)))
+(multiply 10 1000) ; 10000
 
-;; もっと定義してみよう
-(defmacro macroexpand-3 [form]
-  (macroexpand-n 3 form))
+(defmacro multiply-1 [a]
+  (multiply 1 a))
 
-;; ... これを10までやろうと思うんだけど、めんどい
-;; じゃあマクロをいっぱい定義するマクロを作りましょう
+(defmacro multiply-2 [a]
+  (multiply 2 a))
 
-;; これを実行したら%%%が2～10までの数字に置換されればいいな
-(form-n-times 2 10
-              (defmacro macroexpand-%%% [form]
-                (macroexpand-n %%% form)))
+(defmacro multiply-3 [a]
+  (multiply 3 a))
 
-;; じゃ、道具から
-(defn rewrite-index-symbol [sym rewriteWith]
-  (-> sym
-      str
-      (.replaceAll "%%%" (str rewriteWith))
-      symbol
-      ))
+;; この調子で100まで定義したいが根性が持たない
+;; こうかければいいのだが
+(n-times 1 100
+         (defmacro multiply-%%% [a] (multiply %%% a)))
+
+;; その道具を作ろう
+
+(defn rewrite-index-symbol [sbl num]
+  "渡されたシンボルの%%%の部分を指定数字に書き換える。%%%だけならシンボルではなく数字をそのまま返す。"
+  (if (= sbl '%%%)
+    num
+    (-> sbl
+        str
+        (.replaceAll "%%%" (str num))
+        symbol)))
+
+(let [v (rewrite-index-symbol '%%% 100)]
+  [v (.getClass v)]) ; [100 java.lang.Long]
+
+(let [v (rewrite-index-symbol 'multiply-%%% 100)]
+  [v (.getClass v)]) ; [multiply-100 clojure.lang.Symbol]
 
 (defn replace-form-index [idx form]
   (clojure.walk/postwalk
@@ -1158,22 +1160,28 @@ cjpg.core/privatething ; var is not public と怒られます
       %)
    form))
 
-(defmacro form-n-times [start end form]
-  `(do ~@(for [i (range start (inc end))]
-           (replace-form-index i form))))
+;; (defmacro multiply-100 [a] (multiply 100 a))
+(replace-form-index
+ 100
+ '(defmacro multiply-%%% [a] (multiply %%% a)))
 
-;; 実行
-;; これはうまくいかない。
-;; まず、内部の(macroexpand-n %%% form)が実行されるが、%%%が数字じゃないからダメだ。
-(form-n-times
- 2 10
- (defmacro macroexpand-%%% [form]
-   (macroexpand-n %%% form)))
+(defmacro n-times [start end form]
+  `(do ~@(map #(replace-form-index % form)
+              (range start (inc end)))))
 
-;; こっちはうまくいくんだけどね
-(macroexpand
- '(form-n-times
-   2 10
-   (defmacro macroexpand-%%% [form]
-     (macroexpand-n %%% form))))
+;; ようやく準備はできた
+(n-times 1 100
+         (defmacro multiply-%%% [a] (multiply %%% a)))
+
+;; これと同じ
+(do
+  (defmacro multiply-1 [a] (multiply 1 a))
+  (defmacro multiply-2 [a] (multiply 2 a))
+  (defmacro multiply-3 [a] (multiply 3 a))
+  (defmacro multiply-4 [a] (multiply 4 a))
+  :
+  (defmacro multiply-5 [a] (multiply 100 a)))
+
+(multiply-100 100) ; 10000
+
 
