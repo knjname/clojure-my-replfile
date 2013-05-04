@@ -5,6 +5,9 @@
 ;;; MACRO!!!!!!!!!!!!!!!!!!!
 ;; defmacro
 
+(defmacro forall [& body]
+  (doall `(for @~body)))
+
 (declare enclose) ; ちょいと後で紹介
 
 ;; 指定回数分式をくるむマクロ
@@ -231,5 +234,6 @@
  '(let [<> 30]
     (+ <> <>))
  [(gensym)])
+
 
 
