@@ -117,6 +117,16 @@ java.lang.String
 (if true 1 0)                           ; 1
 (if false 1 0)                          ; 0
 
+;; cond
+(defn- guess-era [year]
+  (cond
+   (<= 1968 year 1912) "meiji"
+   (<= 1913 year 1926) "taisho"
+   (<= 1927 year 1988) "showa"
+   (<= 1999 year) "heisei"
+   ))
+(guess-era 1985) ; "showa"
+
 ;; condp
 (defn- guess-established-year [company]
   (condp = company
