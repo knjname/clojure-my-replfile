@@ -474,6 +474,16 @@ java.io.File/separator ; "\\"
                            (lazy-seq (cons (do (print "2nd eval") 2) nil))))]
   (doall lazy-by-hand))
 
+;; partial
+;; 引数の部分適用
+(def dbl
+  (partial * 2))
+(dbl 10) ; 20
+
+(def f*ck
+  (partial str "F*ck "))
+(f*ck "you") ; F*ck you
+
 ;;; arrow macro
 (-> "asdf"
     .toUpperCase ; ASDF
@@ -587,3 +597,32 @@ cjpg.core/privatething ; var is not public と怒られます
 (extends? Sound 蚊) ; true
 (extends? Sound 日光) ; true
 (extends? Sound String) ; false
+
+;; 既存の型にプロトコルを実装させることもできる。
+;; 後でメソッド(?)追加し放題。開世界仮説というやつである。
+(extend-type String Sound
+             (sounds [this] (str "My content is [" this "]")))
+
+(sounds "BOOM") ; "My content is [BOOM]"
+(extends? Sound String) ; true
+
+(extend-type nil Sound
+             (sounds [_] "...silence ..."))
+
+(sounds nil) ; "...silence ..."
+
+;; reify
+;; v. make something concrete.
+;; 具象化関数。関数やプロトコルをとって、それを実装したオブジェクトを返す。
+
+;; コンソールに"runnable runned!"が出る
+(.run (reify Runnable
+        (run [this]
+          (println "runnable runned!"))))
+
+;; "匿名の音がする!"
+(sounds (reify Sound
+          (sounds [_] "匿名の音がする!")))
+
+
+
