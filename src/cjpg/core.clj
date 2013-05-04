@@ -117,6 +117,20 @@ java.lang.String
 (if true 1 0)                           ; 1
 (if false 1 0)                          ; 0
 
+;; condp
+(defn- guess-established-year [company]
+  (condp = company
+    :Apple 1975
+    :Google 1998
+    :Microsoft 1981
+    (str "Whatever " company "'s establishment is.")))
+
+(guess-established-year :Apple) ; 1975
+(guess-established-year :Yahoo) ; "Whatever :Yahoo's establishment is."
+
+
+
+
 ;;; ループ
 
 ;; loop - 末尾再帰のための構文
@@ -664,3 +678,7 @@ cjpg.core/privatething ; var is not public と怒られます
   (println @vv) ; shows 'modified'
   )
 
+;; FizzBuzz
+(map
+ #(condp)
+ (range 1 101))
