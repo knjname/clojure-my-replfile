@@ -615,10 +615,10 @@ cjpg.core/privatething ; var is not public と怒られます
 
 ;; test メタデータ
 (defn factorial
-  {:test #(do
-            (for [[arg result]
-                  [[0 1] [1 1] [2 2] [3 6] [4 24]]]
-              (assert (= (factorial arg) result))))}
+  {:test #(doall ; doallじゃないとforが遅延リストになるので、assertionにならない！
+           (for [[arg result]
+                 [[0 1] [1 1] [2 2] [3 6] [4 24]]]
+             (assert (= (factorial arg) result))))}
   ([n]
      (factorial n 1))
   ([n cur]
