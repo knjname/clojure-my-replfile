@@ -205,6 +205,11 @@
 (inline (+ 1 2)) ; コンパイルしたら3になる。
 
 
+;; マクロの道具など
 
+
+;; シンボルの置換
+(clojure.template/apply-template
+ '[like I] '[I like Apples!] '[hate You]) ; You hate Apples!
 
 
