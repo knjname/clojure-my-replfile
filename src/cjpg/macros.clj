@@ -5,12 +5,21 @@
 ;;; MACRO!!!!!!!!!!!!!!!!!!!
 ;; defmacro
 
+;; (doall (for ...)) がめんどい人向け
 (defmacro forall [& body]
   (doall `(for @~body)))
 
-(declare enclose) ; ちょいと後で紹介
+;; 式をくるむマクロを書いてみよう
+;; たとえば、こんなの。
 
+;; こうかいたら
+(macroexpand '(enclose-n 10 5 * 2))
+;; ↓のようになってほしい
+;; (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 (* 2 5))))))))))
+
+;; 道具の準備
 ;; 指定回数分式をくるむマクロ
+(declare enclose)
 (defmacro enclose-n [n core & encloser]
   (enclose n core encloser))
 
