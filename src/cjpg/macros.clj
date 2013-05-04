@@ -207,9 +207,29 @@
 
 ;; マクロの道具など
 
+;; 当然、パターンマッチング的なのは出来る
+(defmacro guess-arity
+  ([] "no args")
+  ([_] "one args")
+  ([_ _] "two args"))
+
+(guess-arity) ; "no args"
+(guess-arity "") ; "one args"
+
+;; 適当なシンボルの生成
+(gensym) ; G_XXXXX
+;; でも macrovar# 的な書き方があるので、あんまり出番ないかも
 
 ;; シンボルの置換
 (clojure.template/apply-template
  '[like I] '[I like Apples!] '[hate You]) ; You hate Apples!
+
+;; こういう用途だと思います
+(clojure.template/apply-template
+ '[<>]
+ ;; 式中の<>をマクロなどで置き換える場合
+ '(let [<> 30]
+    (+ <> <>))
+ [(gensym)])
 
 

@@ -633,5 +633,29 @@ cjpg.core/privatething ; var is not public と怒られます
 (sounds (reify Sound
           (sounds [_] "匿名の音がする!")))
 
+;;; 例外
 
+(try
+  (/ 1 0)
+  (catch ArithmeticException e
+    "Zero div")) ; "Zero div"
+
+(try
+  (.add [] 100) ; 不変リストにadd（破壊的）メソッドを掛けてみる
+  (catch UnsupportedOperationException e
+    "Promiscuous operation!")) ; "Promiscuous operation!"
+
+;; finallyもあるので、トラップとして有用
+
+(let [v (atom "init") vv (atom "init")]
+  (try
+    (reset! v "modified")
+    (reset! vv "modified")
+    (println @v) ; shows 'modified'
+    (println @vv) ; shows 'modified'
+    (finally
+      (reset! v "init")))
+  (println @v) ; shows 'init'
+  (println @vv) ; shows 'modified'
+  )
 
