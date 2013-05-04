@@ -128,8 +128,13 @@ java.lang.String
 (guess-established-year :Apple) ; 1975
 (guess-established-year :Yahoo) ; "Whatever :Yahoo's establishment is."
 
+(defn foods-compact [c]
+  (condp #(%2 %1) c
+    #{:Apple :Bacon} "ab"
+    #{:Honey :Maple} "hm"
+    ))
 
-
+(foods-compact :Apple) "ab"
 
 ;;; ループ
 
