@@ -1082,6 +1082,7 @@ cjpg.core/privatething ; var is not public と怒られます
 (extends? Sound 日光) ; true
 (extends? Sound String) ; false
 
+;;; MACRO!!!!!!!!!!!!!!!!!!!
 ;; defmacro
 
 (declare enclose) ; ちょいと後で紹介
@@ -1183,5 +1184,65 @@ cjpg.core/privatething ; var is not public と怒られます
   (defmacro multiply-100 [a] (multiply 100 a)))
 
 (multiply-100 100) ; 10000
+
+;; ちなみに、n-times マクロは "%%% times you've defined." のような文字列リテラルに対応していない。
+;; きちんと動作させるのは意外に面倒くさい。
+
+;; 次は外部ファイルをClojureの正式な定義に仕立て上げるマクロ。
+;; CSVファイルを変数定義として自分の名前空間にインポートする。
+
+
+;; とりあえず、ファイルから読み込むことは無視しよう。
+;; こんな感じで呼び出せるとする。
+;; リストが行ごとに分断されて要素となっている
+(import-csv-vars
+ ["foo,hoge" "bar,fuga" "baz,piyo"])
+
+
+;; そうすると下記と同じ意味合いを持つようになるとする。
+(do (def foo "hoge")
+    (def bar "fuga")
+    (def baz "piyo"))
+
+;; じゃ、さっそく
+(defn- csv-line-into-syms [line]
+  (let [splitted (-> line
+                     (.split ","))]
+    [(symbol (nth splitted 0)) (nth splitted 1)]))
+
+(csv-line-into-syms "foo,hoge") ; [foo "hoge"]
+
+(defn import-csv-vars-form [lines]
+  ;; doall付けないとmap自体が遅延シーケンスなので
+  ;; with-openストリームなど期限付きの遅延シーケンス渡された場合にうまくいかない場合がある(不便…)
+  ;; ここでdoallせずに与える元でdoallするのもアリ。
+  `(do ~@(doall
+          (map
+           #(let [[varsym str] (csv-line-into-syms %)]
+              `(def ~varsym ~str))
+           lines))))
+
+(defmacro import-csv-vars [lines]
+  (import-csv-vars-form lines))
+
+;; 実行！
+;; (do (def foo "hoge") (def bar "fuga") (def baz "piyo")) と同じ
+(import-csv-vars
+ ["foo,hoge" "bar,fuga" "baz,piyo"])
+
+(= foo "hoge") ; true
+
+;; ファイルから読み込む機能をつけてみる
+(defmacro load-vardefs-from-csv [filepath]
+  (with-open [rdr (clojure.java.io/reader filepath)]
+    (import-csv-vars-form (line-seq rdr))))
+
+;; ファイルはcjpg/vardefs.csvに用意してある。
+(load-vardefs-from-csv "src/cjpg/vardefs.csv")
+
+;; 上はちゃんとこうなる
+(do (def foo "hoge") (def bar "fuga") (def baz "piyo"))
+
+
 
 
