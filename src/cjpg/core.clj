@@ -613,6 +613,21 @@ cjpg.core/privatething ; var is not public と怒られます
 (-> (Italiano. "bros")
     (.sayHello "Mario")) ; Ciao, Mario bros
 
+;; test メタデータ
+(defn factorial
+  {:test #(do
+            (for [[arg result]
+                  [[0 1] [1 1] [2 2] [3 6] [4 24]]]
+              (assert (= (factorial arg) result))))}
+  ([n]
+     (factorial n 1))
+  ([n cur]
+     (if (< n 1)
+       cur
+       (factorial (dec n) (* cur n)))))
+
+(test #'factorial); :ok
+
 ;; プロトコル
 
 (defprotocol Sound
