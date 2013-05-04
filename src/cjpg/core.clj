@@ -633,7 +633,7 @@ cjpg.core/privatething ; var is not public と怒られます
 (sounds (reify Sound
           (sounds [_] "匿名の音がする!")))
 
-;;; 例外
+;;; 例外 - Javaとほとんどかわらない
 
 (try
   (/ 1 0)
@@ -644,6 +644,11 @@ cjpg.core/privatething ; var is not public と怒られます
   (.add [] 100) ; 不変リストにadd（破壊的）メソッドを掛けてみる
   (catch UnsupportedOperationException e
     "Promiscuous operation!")) ; "Promiscuous operation!"
+
+(try
+  (throw (NullPointerException.))
+  (catch NullPointerException e
+    "ぬるぽ！")) ; "ぬるぽ！"
 
 ;; finallyもあるので、トラップとして有用
 
