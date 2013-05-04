@@ -484,6 +484,15 @@ java.io.File/separator ; "\\"
   (partial str "F*ck "))
 (f*ck "you") ; F*ck you
 
+;;; doto
+(doto
+    (java.util.TreeMap.) ; 適当な変数(ここではaとする)に左を束縛
+  (.put "Tue" "火曜日") ; (.put a "火曜日")
+  (.put "Wed" "水曜日") ; (.put a "水曜日")
+  (println) ; マップを印字する, println a
+  ) ; aが返る 
+
+
 ;;; arrow macro
 (-> "asdf"
     .toUpperCase ; ASDF
