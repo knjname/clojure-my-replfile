@@ -216,6 +216,46 @@
 
 (inline (+ 1 2)) ; コンパイルしたら3になる。
 
+;; カリー化
+(defn currize [params body]
+  (if (empty? params)
+    `(do ~@body)
+    `(fn [~(first params)]
+       ~(currize (rest params) body))))
+
+(defmacro currying [params & body]
+  (currize params body))
+
+;; これは
+(currying [a b c d]
+          (+ (* a b) (/ c d)))
+
+;; 下記に展開される
+(clojure.core/fn [a]
+  (clojure.core/fn [b]
+    (clojure.core/fn [c]
+      (clojure.core/fn [d] (do (+ (* a b) (/ c d)))))))
+
+;; 使ってみるけど、カッコがめんどい
+((((currying [a b c] (+ a b c)) 10) 20) 30)
+
+;; めんどいので、マクロつくる
+(defn reverse-arrow [args body]
+  (if (empty? args)
+    body
+    (recur (rest args) `(~body ~(first args)))))
+
+(defmacro <- [subject & args]
+  (reverse-arrow args subject))
+
+;; こう書けるよ
+(<- (currying [a b c] (+ a b c))
+    10 20 30)
+;; こうなる
+((((currying [a b c] (+ a b c)) 10) 20) 30)
+;; 最終的にはこれ
+((((fn* ([a] (fn* ([b] (fn* ([c] (do (+ a b c)))))))) 10) 20) 30)
+
 
 ;; マクロの道具など
 
