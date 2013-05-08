@@ -2,8 +2,8 @@
 (ns cjpg.nstest)
 
 ;;; nrepl.elのキー
-;; C-c C-n nsフォームを評価する
 ;; C-c M-n REPLの名前空間をカレントバッファの名前空間に変更
+;; C-c C-n nsフォームを評価する
 
 ;; namespace
 (in-ns 'dokodemo.door) ; #<Namespace dokodemo.door> シンボル
