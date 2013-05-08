@@ -222,11 +222,11 @@
 (inline (+ 1 2)) ; コンパイルしたら3になる。
 
 ;; カリー化
-(defn currize [params body]
-  (if (empty? params)
-    `(do ~@body)
-    `(fn [~(first params)]
-       ~(currize (rest params) body))))
+(defn currize [[x & xs] body]
+  `(fn [~x]
+     ~(if xs
+        (currize xs body)
+        `(do ~@body))))
 
 (defmacro currying [params & body]
   (currize params body))
