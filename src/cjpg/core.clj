@@ -16,6 +16,7 @@
 ;; 3. 編集にはclojure modeとparedit.elを使いましょう。
 ;; paredit.elの使い方はこちら：
 ;; http://mumble.net/~campbell/emacs/paredit.el
+;; http://www.daregada.sakuraweb.com/paredit_tutorial_ja.html
 
 ;;; 基本的なnrepl.elのキー
 ;; C-x C-e 前のS式を評価
