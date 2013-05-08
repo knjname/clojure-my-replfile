@@ -12,6 +12,10 @@
 ;; leiningen経由でクラスパス通ってREPLが起動します。
 ;; REPL起動時にcjpg/project.cljに依存性書いておけばそいつらもDL＆ロードされます。
 ;; 依存性増えたらREPL殺してproject.cljに書き足してREPLもっかい起動しましょう。
+;;
+;; 3. 編集にはclojure modeとparedit.elを使いましょう。
+;; paredit.elの使い方はこちら：
+;; http://mumble.net/~campbell/emacs/paredit.el
 
 ;;; 基本的なnrepl.elのキー
 ;; C-x C-e 前のS式を評価
