@@ -19,7 +19,7 @@
 ;; http://www.daregada.sakuraweb.com/paredit_tutorial_ja.html
 
 ;;; 基本的なnrepl.elのキー
-;; C-x C-e 前のS式を評価
+;; C-x C-e 前のS式を評価 C-x C-p で別バッファに評価結果を表示
 ;; C-M-x or C-c C-c カーソル位置のS式をトップから評価
 ;; C-b 評価を中止. (iterate + 0) とかの無限リストを不用意に評価したときに
 ;; C-c C-k カレントバッファをロード
