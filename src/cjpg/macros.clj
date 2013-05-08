@@ -6,7 +6,7 @@
 ;; マクロをやる前に、nreplのキーを覚えよう。
 ;; ＜マクロを展開するコマンド＞
 ;; C-c C-m macroexpand-1を実行
-;; C-c M-m macroexpandを実行
+;; C-c M-m macroexpand-allを実行
 
 ;; defmacro
 
