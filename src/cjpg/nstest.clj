@@ -29,7 +29,7 @@ dokodemo.door3/suneo ; "Only ... home." もちろん見られる
 ((ns-map door3) 'String) ; java.lang.String ;  nil なら、oh みられない！ そうじゃないなら、見られる。
 
 ;;; まあ、戻りましょう
-(ns cjpg.core)
+(ns cjpg.nstest)
 
 ;; 外部から見られない変数
 (def ^:private privatething 100)
@@ -37,14 +37,15 @@ dokodemo.door3/suneo ; "Only ... home." もちろん見られる
 (defn- privatefunc [n] (+ n 100))
 
 privatething ; みえます
-cjpg.core/privatething ; みえます
+cjpg.nstest/privatething ; みえます
 (privatefunc 200) ; みえます
-(cjpg.core/privatefunc 200) ; みえます
+(cjpg.nstest/privatefunc 200) ; みえます
 
 (in-ns 'externalworld)
-cjpg.core/privatething ; var is not public と怒られます
-(cjpg.core/privatefunc 200) ; 同様
+cjpg.nstest/privatething ; var is not public と怒られます
+(cjpg.nstest/privatefunc 200) ; 同様
 
 ;;; 戻ります
-(ns cjpg.core)
+(ns cjpg.nstest)
+
 
