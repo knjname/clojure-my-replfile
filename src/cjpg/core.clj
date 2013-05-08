@@ -8,9 +8,21 @@
 ;; で
 ;; cjpg/src/cjpg/core.clj
 ;; とかができる。
-;; core.cljを開いた状態でM-x nrepl-jack-inをするとleiningen経由でクラスパス通ってREPLが起動します。
+;; core.cljを開いた状態でM-x nrepl-jack-in (C-c M-j)をすると
+;; leiningen経由でクラスパス通ってREPLが起動します。
 ;; REPL起動時にcjpg/project.cljに依存性書いておけばそいつらもDL＆ロードされます。
 ;; 依存性増えたらREPL殺してproject.cljに書き足してREPLもっかい起動しましょう。
+
+;;; 基本的なnrepl.elのキー
+;; C-x C-e 前のS式を評価
+;; C-M-x or C-c C-c カーソル位置のS式をトップから評価
+;; C-b 評価を中止. (iterate + 0) とかの無限リストを不用意に評価したときに
+;; C-c C-k カレントバッファをロード
+;; C-c C-l ファイルをロード
+;; C-c C-d ポイントのシンボルのドキュメントを表示
+;; C-c C-j ポイントのシンボルのJavadocを表示
+;; M-. ポイントのシンボルのソースを表示 (M-, で戻る)
+;; C-c C-z REPLを開く
 
 ;; 名前空間宣言
 (ns cjpg.core)
