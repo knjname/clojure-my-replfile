@@ -678,7 +678,33 @@ java.io.File/separator ; "\\"
   (println @vv) ; shows 'modified'
   )
 
-;; FizzBuzz
+;; FizzBuzz (in progress)
 (map
- #(condp)
+ #(condp
+      ())
  (range 1 101))
+
+;;; Agent
+;; 値の変化の管理方法の一つ
+;; (agent 初期値)
+(def counter (agent 0))
+
+@counter ; 参照。0が返る。
+
+(send counter inc) ; inc関数を使って更新
+@counter ; 1たされる
+(send counter #(* 2 %))
+@counter ; 2倍になる
+
+;; sendしてもすぐに制御が返る。
+(def heavy-double
+  #(do
+     (Thread/sleep 4000)
+     (* 2 %)))
+(send counter heavy-double) ; 本来4秒かかるはずだがすぐに制御が返る
+@counter ; 4秒経って2倍になる
+
+(do
+  (send counter heavy-double)
+  (await counter) ; 計算が終わるのを待つことも可能
+  @counter) ; 計算結果がちゃんと返る
