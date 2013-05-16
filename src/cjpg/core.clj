@@ -716,13 +716,45 @@ java.io.File/separator ; "\\"
 (def proxied-runnable
   (proxy
       [Runnable] ; 実装するインタフェースの羅列
-      [] ; スーパークラスへの引数
+      [] ; スーパークラスコンストラクタへの引数
     (run [] (println "Runnable called")) ; メソッドの実装
     ))
 ;; 似た機能としてreifyがある。
+
 (.run proxied-runnable) ; Runnable called と印字される
+;; といいたいところだが、
+;; そもそもClojureの関数はRunnable(それとCallable)を実装しているので、意味がない
+(.run #(println "Runnable called")) ; Runnable called と印字される
+
+(instance? Runnable proxied-runnable) ; true
+(instance? Callable #(println "Runnable called")) ; true
+
+;; 例として自作のインタフェースを用意してみる
+(definterface Quote
+  (^String quote [^String message])) ; Quoteインタフェースが作成される
+
+;; それを実装
+(def single-quoter
+  (proxy [Quote] []
+    (quote [message] (str "'" message "'"))))
+(instance? Quote single-quoter) ; true
+
+;; 使ってみる
+(.quote single-quoter "quoted message") ; "'quoted message'"
+
+;; 別にインタフェースじゃなくてもいい
+;; たとえば、常にサイズ0と応答するArrayListを作ってみる
+(def zero-list
+  (proxy [java.util.ArrayList]
+      [["initial" "element!"]] ; 親クラスへのコンストラクタとして初期要素となるリストを渡してみる
+    (size [] 0)))
+
+(.size zero-list) ; 0
+(.get zero-list 0) ; "initial"
+(.get zero-list 1) ; "element!"
 
 
+(proxy-super)
 
 
 
