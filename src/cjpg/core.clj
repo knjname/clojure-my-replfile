@@ -708,3 +708,24 @@ java.io.File/separator ; "\\"
   (send counter heavy-double)
   (await counter) ; 計算が終わるのを待つことも可能
   @counter) ; 計算結果がちゃんと返る
+
+
+;; プロキシ定義
+;; 基本的には単純なJavaのダイナミックプロキシと同じ
+;; インタフェースを実装したバイトコードを生成し、そのオブジェクトを生成する
+(def proxied-runnable
+  (proxy
+      [Runnable] ; 実装するインタフェースの羅列
+      [] ; スーパークラスへの引数
+    (run [] (println "Runnable called")) ; メソッドの実装
+    ))
+;; 似た機能としてreifyがある。
+(.run proxied-runnable) ; Runnable called と印字される
+
+
+
+
+
+
+
+
